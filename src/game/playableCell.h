@@ -15,7 +15,7 @@ typedef struct playableCell {
  * Return 2 and do not set the value if the value at 'noteValue' emplacement is already equal to 1.
  * Return 0 if ok.
 */
-int insertNote(PlayableCell* cell, char noteValue);
+int insertNote(PlayableCell* cell, int noteValue);
 
 /*
  * Set the value 1 at the 'noteValue' emplacement in notes.
@@ -23,14 +23,14 @@ int insertNote(PlayableCell* cell, char noteValue);
  * Return 2 and do not set the value if the value at 'noteValue' emplacement is already equal to 1.
  * Return 0 if ok.
 */
-int removeNote(PlayableCell* cell, char noteValue);
+int removeNote(PlayableCell* cell, int noteValue);
 
 /*
  * Insert the value 'value' in the cell 'cell'.
  * Return 2 if the value in the cell 'cell' is already defined (and still do the insertion).
  * Return 0 if ok.
 */
-int insertValue(PlayableCell* cell, char value);
+int insertValue(PlayableCell* cell, int value);
 
 /*
  * Set the value to 0 in the cell 'cell'.

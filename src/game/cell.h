@@ -3,7 +3,7 @@
  * The value of the cell is 0 by default.
 */
 typedef struct cell {
-        char value=0;
+        int value=0;
 } Cell;
 
 /*
@@ -11,4 +11,4 @@ typedef struct cell {
  * Return 2 if the value in the cell 'cell' is already defined (and still do the insertion).
  * Return 0 if ok.
 */
-int insertValue(Cell* cell, char value);
+int insertValue(Cell* cell, int value);
