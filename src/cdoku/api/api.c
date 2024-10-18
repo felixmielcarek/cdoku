@@ -2,7 +2,7 @@
  *  Specify to the compiler the set of features we want.
  *  Here needed for 'struct addr'.
  */
-#define _POSIX_C_SOURCE 200112L 
+#define _POSIX_C_SOURCE 200112L
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,42 +18,59 @@
 #include <ctype.h>
 #include <arpa/inet.h>
 
-#define REQUEST_MAX 1024
+#define REQUEST_MAX 1024	// Max size of a request
+#define ACTIONS_MAX 1		// "GET", "DELETE"... 
+#define METHODS_MAX 32		// "StartNewGame", "SelectCell"...
+#define ARGS_MAX	32
 
-/*
- *  Accept one argument which identify the service we are using.
- */
-int main(int argc, char* argv[]) {
+int parseRequest(char* request) {
+	char *action = malloc(ACTIONS_MAX*sizeof(char));
+	char *token = strtok(request, " ");
+
+	if (token != NULL) strcpy(action, token);
+	else {
+		free(token);	
+		return 1;
+	}
+
+	fprintf(stderr,"%s\n", action);
+
+	free(action);
+	return 0;
+}
+
+int treatRequest(char* request) {
+	parseRequest(request);
+
+	return 0;
+}
+
+int startServer(char* port) {
 	int s,		// Server socket file descriptor
 	    sock,	// Client socket file descriptor
 	    ret;	// Functions return
 
 	struct addrinfo hints,		// Our TCP server caracteritics
-			*result;	// Our actual TCP server address
+					*result;	// Our actual TCP server address
 
 	struct sockaddr_storage src_addr;
 	socklen_t len_src_addr;
 	char request[REQUEST_MAX];	// Data of client requests
 
-	if(argc != 2) {
-		fprintf(stderr,"Error: arguments number.\n");
-		exit(1);
-	}
-
 	// Fill memory at 'hints' address with 0
 	memset(&hints, 0, sizeof(struct addrinfo)); 
 
 	hints.ai_flags = AI_PASSIVE;
-	hints.ai_family = AF_INET6;		// Allow IPv4 or IPv6
+	hints.ai_family = AF_INET6;			// Allow IPv4 or IPv6
 	hints.ai_socktype = SOCK_STREAM;	// Define TCP stream
-	hints.ai_protocol = 0;			// Allow any protocol
+	hints.ai_protocol = 0;				// Allow any protocol
 	hints.ai_canonname = NULL;
 	hints.ai_addr = NULL;
 	hints.ai_next = NULL;
 	
 	// Build our TCP server address
-	ret = getaddrinfo(NULL, argv[1], &hints, &result);
-
+	ret = getaddrinfo(NULL, port, &hints, &result);
+	
 	if(ret != 0) {
 		fprintf(stderr, "Error getaddrinfo: %s.\n", gai_strerror(ret));
 		exit(EXIT_FAILURE);
@@ -96,13 +113,14 @@ int main(int argc, char* argv[]) {
 
 		puts("New connection accepted.");
 
-		// Loop as long as receiving requests
+		// Wait for new request received
 		while((ret=recv(sock, request, REQUEST_MAX, 0)) > 0) {
 			// Add end-string caracter at the end of the request
 			request[ret] = 0;
 			
 			// region: Treatment
 			puts("Treatment in progress.");
+			treatRequest(request);
 			// endregion : Treatment
 			
 			// Send response
@@ -122,6 +140,20 @@ int main(int argc, char* argv[]) {
 
 		if(ret == -1) perror("recv");
 	}
+
+	return 0;
+}
+
+/*
+ *  Accept one argument which identify the service we are using.
+ */
+int main(int argc, char* argv[]) {
+	if(argc != 2) {
+		fprintf(stderr,"Error: arguments number.\n");
+		exit(1);
+	}
+
+	startServer(argv[1]);
 
 	return 0;
 }
