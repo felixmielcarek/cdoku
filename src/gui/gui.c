@@ -1,11 +1,15 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>	// to render text with SDL
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 
+#include "constants.h"
+
 typedef struct guiElements {
 	SDL_Window* window;
 	SDL_Renderer* renderer;
+	SDL_Texture* textTexture;
 } GuiElements;
 
 int cleanExit(int result, GuiElements* guiElements) {
@@ -13,13 +17,19 @@ int cleanExit(int result, GuiElements* guiElements) {
 		SDL_DestroyWindow(guiElements->window);
 	if(guiElements->renderer != NULL) 
 		SDL_DestroyRenderer(guiElements->renderer);
-	
+
+	TTF_Quit();
 	SDL_Quit();
 	return result;
 }
 
 int exitOnError(int result, GuiElements* guiElements, char* context) {
 	fprintf(stderr, "Error: %s.\n",context);
+	return cleanExit(result, guiElements);
+}
+
+int exitOnTTFError(int result, GuiElements* guiElements, char* context) {
+	fprintf(stderr, "Error TTF [%s]: %s", context, TTF_GetError());
 	return cleanExit(result, guiElements);
 }
 
@@ -34,34 +44,26 @@ int setRanderDrawColor(SDL_Renderer* renderer, SDL_Color color) {
 }
 
 int renderEmptyGrid(GuiElements* guiElements) {
-	SDL_Color bgColor	= {0  , 193, 255, 255};
-	SDL_Color white		= {255, 255, 255, 255};
-	SDL_Color gray1		= {215, 219, 221, 255};
-	SDL_Color gray2		= {121, 125, 127, 255};
 	bool isLastSectionGray = false;
-	int sectionSize = 120;
-	int cellSize = sectionSize/3;
-	int gridX = 100;
-	int gridY = 100;
 
 	// region: Background
-	setRanderDrawColor(guiElements->renderer, bgColor);
+	setRanderDrawColor(guiElements->renderer, BGCOLOR);
 	SDL_RenderClear(guiElements->renderer);
 	// endregion : Background
 	
 
 	// region : Grid
 	for(int sectionRow=0 ; sectionRow<3 ; ++sectionRow) {
-		int sectionX = sectionRow * sectionSize + gridX;
+		int sectionX = sectionRow * SECTIONSIZE + GRIDX;
 		for(int sectionColumn=0 ; sectionColumn<3 ; ++sectionColumn) {
-			int sectionY = sectionColumn * sectionSize + gridY;
+			int sectionY = sectionColumn * SECTIONSIZE + GRIDY;
 
 			// region : Section
 			setRanderDrawColor(guiElements->renderer, 
-					isLastSectionGray ? white : gray1);
+					isLastSectionGray ? WHITE : GRAY1);
 
 			SDL_Rect section = { 
-				sectionX, sectionY, sectionSize, sectionSize 
+				sectionX, sectionY, SECTIONSIZE, SECTIONSIZE
 			};
 
 			SDL_RenderFillRect(guiElements->renderer, &section);
@@ -75,11 +77,11 @@ int renderEmptyGrid(GuiElements* guiElements) {
 					// region : Cell
 					setRanderDrawColor( 
 							guiElements->renderer, 
-							gray2);
+							GRAY2);
 					SDL_Rect cell = { 
-						cellRow*cellSize + sectionX,
-						cellColumn*cellSize + sectionY,
-						cellSize, cellSize 
+						cellRow*CELLSIZE + sectionX,
+						cellColumn*CELLSIZE + sectionY,
+						CELLSIZE, CELLSIZE
 					};
 
 					SDL_RenderDrawRect( 
@@ -93,7 +95,33 @@ int renderEmptyGrid(GuiElements* guiElements) {
 	}
 	// endregion : Grid
 	
-    	SDL_RenderPresent(guiElements->renderer);
+    SDL_RenderPresent(guiElements->renderer);
+
+	return 0;
+}
+
+int renderNumberInCell(GuiElements* guiElements, char* text, int row, int column) {
+	int textWidth, textHeight;
+
+	if(TTF_Init() == -1)
+		return exitOnTTFError(EXIT_FAILURE, guiElements, "SDL TTF init");
+
+	TTF_Font* font = TTF_OpenFont(FONTNAME, FONTSIZE);
+	TTF_SizeText(font, text, &textWidth, &textHeight);
+
+	SDL_Surface* textSurface = TTF_RenderText_Solid(font, text, BLACK);
+	SDL_Texture* textTexture = SDL_CreateTextureFromSurface(guiElements->renderer, textSurface);
+	SDL_FreeSurface(textSurface);
+
+	SDL_Rect textRect = {
+		GRIDX + (CELLSIZE/2) - (textWidth/2) + (CELLSIZE*row),
+		GRIDY + (CELLSIZE/2) - (textHeight/2) + (CELLSIZE*column), textWidth, textHeight
+	};
+	SDL_RenderCopy(guiElements->renderer, textTexture, NULL, &textRect);
+	SDL_RenderPresent(guiElements->renderer);
+
+	SDL_DestroyTexture(textTexture);
+	TTF_CloseFont(font);
 
 	return 0;
 }
@@ -102,7 +130,7 @@ int main(int argc, char *argv[]) {
 	GuiElements guiElements;
 
 	if(SDL_Init(SDL_INIT_VIDEO) != 0) 
-		return exitOnSDLError(EXIT_FAILURE, &guiElements, "init");
+		return exitOnSDLError(EXIT_FAILURE, &guiElements, "SDL init");
 
 	guiElements.window = SDL_CreateWindow("Cdoku", 	SDL_WINDOWPOS_CENTERED, 
 			SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_SHOWN);
@@ -117,8 +145,10 @@ int main(int argc, char *argv[]) {
 				"renderer creation");
 
 	renderEmptyGrid(&guiElements);
+	renderNumberInCell(&guiElements, "1", 0, 0);
+	renderNumberInCell(&guiElements, "2", 1, 0);
 
-	SDL_Delay(10000);
+	SDL_Delay(3000);
 
 	return cleanExit(EXIT_SUCCESS, &guiElements);
 }
