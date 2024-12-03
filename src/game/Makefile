@@ -1,7 +1,7 @@
 include ../variables.mk
 
-NAME = gui
-SUBDIRS = constants common rendering cellRendering sectionRendering
+NAME = game
+SUBDIRS = cJSON
 .PHONY: $(SUBDIRS) clean
 
 all: $(NAME).o

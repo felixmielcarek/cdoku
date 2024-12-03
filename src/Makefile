@@ -1,13 +1,23 @@
-CC = gcc
-CFLAGS = -Wall -g main.c -std=c99 -pedantic 
+include variables.mk
 
-all : cdoku.out
-	
-cdoku.out : main.o
-	$(CC) -o cdoku.out main.o
+NAME = cdoku
+SUBDIRS = game gui
+OBJS := $(shell find . -type f -name "*.o")
+.PHONY: $(SUBDIRS) clean
 
-main.o : main.c
-	$(CC) -c $(CFLAGS) main.c
+all: $(NAME).out
 
-clean :
-	rm -f cdoku *.o
+$(NAME).out : $(NAME).o $(OBJS)
+	$(CC) -o $(NAME).out $(OBJS) $(SDLFLAGS)
+
+$(NAME).o : $(NAME).c $(SUBDIRS)
+	$(CC) -c $(CFLAGS) $(NAME).c
+
+$(SUBDIRS):
+	$(MAKE) -C $@
+
+clean:
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir clean; \
+	done
+	rm -f $(NAME).out *.o

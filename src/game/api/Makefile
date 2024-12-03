@@ -1,8 +1,8 @@
 # Variables
 
+include variables.mk
+
 NAME = api
-CC = gcc
-CFLAGS = -Wall -g -std=c99 -pedantic 
 OBJS = $(NAME).o
 
 # Steps
