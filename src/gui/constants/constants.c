@@ -4,10 +4,14 @@ const SDL_Color WHITE = {255, 255, 255, 255};
 const SDL_Color GRAY1 = {215, 219, 221, 255};
 const SDL_Color GRAY2 = {121, 125, 127, 255};
 const SDL_Color BLACK = {0, 0, 0, 0};
-const SDL_Color BLUE = {0, 193, 255, 255};
+const SDL_Color BLUE1 = {174, 214, 241, 255};
+const SDL_Color BLUE2 = {133, 193, 233, 255};
+const SDL_Color BLUE3 = {93, 173, 226, 255};
 
-const SDL_Color BGCOLOR = BLUE;
-const SDL_Color SELECTEDCELLCOLOR = BLUE;
+const SDL_Color BGCOLOR = GRAY2;
+const SDL_Color SELECTEDCELLCOLOR = BLUE3;
+const SDL_Color NUMBERSELECTEDCELLCOLOR = BLUE2;
+const SDL_Color LINKEDSELECTEDCELLCOLOR = BLUE1;
 const SDL_Color CELLCOLOR = WHITE;
 
 const int CELLSIZE = 40;

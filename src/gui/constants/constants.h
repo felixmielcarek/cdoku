@@ -5,6 +5,8 @@
 
 extern const SDL_Color BGCOLOR;
 extern const SDL_Color SELECTEDCELLCOLOR;
+extern const SDL_Color NUMBERSELECTEDCELLCOLOR;
+extern const SDL_Color LINKEDSELECTEDCELLCOLOR;
 extern const SDL_Color CELLCOLOR;
 
 extern const int CELLSIZE;

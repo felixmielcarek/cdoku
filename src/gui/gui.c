@@ -20,10 +20,11 @@ int runGui(const Grid g) {
 
     renderBase(&guiElements);
     renderGrid(&guiElements, g);
+    renderSelection(&guiElements, g, 0, 1);
 
     SDL_RenderPresent(guiElements.renderer);
 
-    SDL_Delay(10000);
+    SDL_Delay(5000);
 
     return cleanExit(EXIT_SUCCESS, &guiElements);
 }

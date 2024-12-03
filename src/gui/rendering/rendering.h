@@ -14,6 +14,7 @@
 #include "../constants/constants.h"
 #include "../sectionRendering/sectionRendering.h"
 
+int renderSelection(const GuiElements *guiElements, const Grid grid, const int cellColumn, const int cellRow);
 int renderBase(const GuiElements *gui_elements);
 int renderGrid(const GuiElements *guiElements, const Grid grid);
 
