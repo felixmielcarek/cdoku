@@ -1,7 +1,7 @@
 #include "constants.h"
 
 const SDL_Color WHITE = {255, 255, 255, 255};
-const SDL_Color GRAY1 = {215, 219, 221, 255};
+const SDL_Color GRAY1 = {133, 146, 158, 255};
 const SDL_Color GRAY2 = {121, 125, 127, 255};
 const SDL_Color BLACK = {0, 0, 0, 0};
 const SDL_Color BLUE1 = {174, 214, 241, 255};

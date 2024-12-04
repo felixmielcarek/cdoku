@@ -1,23 +1,19 @@
 include variables.mk
 
 NAME = cdoku
-SUBDIRS = game gui
-OBJS := $(shell find . -type f -name "*.o")
-.PHONY: $(SUBDIRS) clean
+SRCS =$(shell find . -type f -name "*.c")	# find every C file in subfolders
+OBJS = $(SRCS:.c=.o)	# copy C files names after changing the file extensions
 
 all: $(NAME).out
 
-$(NAME).out : $(NAME).o $(OBJS)
-	$(CC) -o $(NAME).out $(OBJS) $(SDLFLAGS)
+$(NAME).out: $(OBJS)	# requires every C files to be compiled
+	$(CC) -o $@ $(OBJS) $(SDLFLAGS)
 
-$(NAME).o : $(NAME).c $(SUBDIRS)
-	$(CC) -c $(CFLAGS) $(NAME).c
-
-$(SUBDIRS):
-	$(MAKE) -C $@
+# handle a compilation of a C file
+%.o: %.c
+	$(CC) -c $(CFLAGS) $< -o $@
+# '$<' refer to the target, here '%.o'
+# '$@' refer to the requirement, here '%.c'
 
 clean:
-	@for dir in $(SUBDIRS); do \
-		$(MAKE) -C $$dir clean; \
-	done
-	rm -f $(NAME).out *.o
+	rm -f $(NAME).out $(OBJS)
