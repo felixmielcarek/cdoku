@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #include "common/common.h"
+#include "constants/constants.h"
 #include "rendering/rendering.h"
 
 int runGui(const Grid g);

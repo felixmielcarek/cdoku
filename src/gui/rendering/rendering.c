@@ -13,9 +13,11 @@ int renderSelection(const GuiElements *guiElements, const Grid grid, const int c
             int tmpSectionRow = row / 3;
             if (col == cellColumn || row == cellRow || (tmpSectionCol == sectionColumn && tmpSectionRow == sectionRow))
                 renderCell(guiElements, grid.cells[col][row], col, row, LINKEDSELECTEDCELLCOLOR);
-            if (grid.cells[cellColumn][cellRow].value != 0 &&
-                grid.cells[cellColumn][cellRow].value == grid.cells[col][row].value)
+            else if (grid.cells[cellColumn][cellRow].value != 0 &&
+                     grid.cells[cellColumn][cellRow].value == grid.cells[col][row].value)
                 renderCell(guiElements, grid.cells[col][row], col, row, NUMBERSELECTEDCELLCOLOR);
+            else
+                renderCell(guiElements, grid.cells[col][row], col, row, CELLCOLOR);
         }
     }
     renderCell(guiElements, grid.cells[cellColumn][cellRow], cellColumn, cellRow, SELECTEDCELLCOLOR);
