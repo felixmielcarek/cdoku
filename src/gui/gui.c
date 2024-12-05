@@ -19,7 +19,7 @@ int getCoordonatesCell(const int x, const int y, int *column, int *row) {
 
 int gameLoop(const GuiElements *guiElements, Grid g) {
     SDL_Event event;
-    int running = 1, lastSelectedCellColumn = -1, lastSelectedCellRow = -1, value, gameResult;
+    int running = 1, lastSelectedCellColumn = -1, lastSelectedCellRow = -1, value;
 
     while (running) {
         while (SDL_PollEvent(&event)) {
@@ -29,13 +29,15 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
                     break;
 
                 case SDL_KEYDOWN:
-                    value = atoi(SDL_GetKeyName(event.key.keysym.sym));
+                    const char *pressedKeyName = SDL_GetKeyName(event.key.keysym.sym);
+                    fprintf(stderr, "Key pressed:\t%s\n", pressedKeyName);
+                    value = atoi(pressedKeyName);
                     // if pressed key is a number
                     if (value != 0) {
                         // if a cell is selected
                         if (lastSelectedCellColumn != -1 && lastSelectedCellRow != -1) {
                             if (insertValue(&g.cells[lastSelectedCellColumn][lastSelectedCellRow], value) == 0) {
-                                gameResult = isGameFinished(g);
+                                int gameResult = isGameFinished(g);
                                 if (gameResult == 0)
                                     renderWunGrid(guiElements, g);
                                 if (gameResult == 1)
@@ -45,7 +47,16 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
                                 SDL_RenderPresent(guiElements->renderer);
                             }
                         }
+                        break;
                     }
+                    if (strcmp(pressedKeyName, "Backspace") == 0 || strcmp(pressedKeyName, "Delete") == 0) {
+                        if (removeValue(&g.cells[lastSelectedCellColumn][lastSelectedCellRow]) == 0) {
+                            renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
+                            SDL_RenderPresent(guiElements->renderer);
+                        }
+                        break;
+                    }
+
                     break;
 
                 case SDL_MOUSEBUTTONDOWN:

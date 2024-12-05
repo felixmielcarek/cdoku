@@ -8,6 +8,7 @@ int insertValue(Cell* cell, int value) {
 
 int removeValue(Cell* cell) {
     if(!cell->isModifiable) return 1;
+    if(cell->value == 0) return 2;
     cell->value = 0;
     return 0;
 }
