@@ -5,9 +5,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../game/game.h"
 #include "common/common.h"
+#include "constants/constants.h"
 #include "rendering/rendering.h"
 
-int runGui(const Grid g);
+int runGui(Grid g);
 
 #endif

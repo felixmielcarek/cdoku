@@ -25,11 +25,11 @@ int renderCellBackground(const GuiElements *guiElements, const int column, const
     return 0;
 }
 
-int renderCellBorders(const GuiElements *guiElements, const int column, const int row) {
+int renderCellBorders(const GuiElements *guiElements, const int column, const int row, const SDL_Color borderColor) {
     int x, y;
     getCellCoordonates(column, row, &x, &y);
 
-    setRanderDrawColor(guiElements->renderer, CELLBORDERCOLOR);
+    setRanderDrawColor(guiElements->renderer, borderColor);
     for (int i = 0; i < CELLBORDERSIZE; ++i) {
         SDL_Rect border = {x - (i + 1), y - (i + 1), CELLSIZE + (i + 1) * 2, CELLSIZE + (i + 1) * 2};
         SDL_RenderDrawRect(guiElements->renderer, &border);
@@ -38,10 +38,10 @@ int renderCellBorders(const GuiElements *guiElements, const int column, const in
     return 0;
 }
 
-int renderCellText(const GuiElements *guiElements, const Cell cell, const int column, const int row) {
+int renderCellText(const GuiElements *guiElements, const Cell cell, const int column, const int row,
+                   const SDL_Color textColor) {
     char text[2];
     int textWidth, textHeight, cellX, cellY;
-    SDL_Color textColor = cell.isModifiable ? CELLTEXTCOLOR : FIXCELLTEXTCOLOR;
 
     text[0] = cell.value + 48;
     text[1] = 0;
@@ -65,9 +65,10 @@ int renderCellText(const GuiElements *guiElements, const Cell cell, const int co
 }
 
 int renderCell(const GuiElements *guiElements, const Cell cell, const int column, const int row,
-               const SDL_Color backgroundColor) {
+               const SDL_Color textColor, const SDL_Color backgroundColor) {
     renderCellBackground(guiElements, column, row, backgroundColor);
-    if(cell.value != 0) renderCellText(guiElements, cell, column, row);
+    if (cell.value != 0)
+        renderCellText(guiElements, cell, column, row, textColor);
 
     return 0;
 }

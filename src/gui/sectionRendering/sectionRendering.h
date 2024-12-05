@@ -10,6 +10,6 @@
 #include "../common/common.h"
 #include "../constants/constants.h"
 
-int renderSectionBorders(const GuiElements *guiElements, const int column, const int row);
+int renderSectionBorders(const GuiElements *guiElements, const int column, const int row, const SDL_Color borderColor);
 
-#endif //SECTIONRENDERING_H
+#endif // SECTIONRENDERING_H
