@@ -49,7 +49,7 @@ int getNewGrid(Grid* result) {
 
             Cell newCell;
             newCell.isModifiable = value->valueint == 0;
-            for(int i=0 ; i<9 ; ++i) newCell.notes[i] = false;    //TODO: move init in struct
+            for(int i=0 ; i<9 ; ++i) newCell.notes[i] = false;
             newCell.value = value->valueint;
 
             result->cells[rowIndex][columnIndex] = newCell;

@@ -17,9 +17,9 @@ int getCoordonatesCell(const int x, const int y, int *column, int *row) {
     return 0;
 }
 
-int gameLoop(const GuiElements *guiElements, const Grid g) {
+int gameLoop(const GuiElements *guiElements, Grid g) {
     SDL_Event event;
-    int running = 1, lastSelectedCellColumn = -1, lastSelectedCellRow = -1;
+    int running = 1, lastSelectedCellColumn = -1, lastSelectedCellRow = -1, value;
 
     while (running) {
         while (SDL_PollEvent(&event)) {
@@ -29,7 +29,17 @@ int gameLoop(const GuiElements *guiElements, const Grid g) {
                     break;
 
                 case SDL_KEYDOWN:
-                    printf("Key pressed: %s\n", SDL_GetKeyName(event.key.keysym.sym));
+                    value = atoi(SDL_GetKeyName(event.key.keysym.sym));
+                    // if pressed key is a number
+                    if (value != 0) {
+                        // if a cell is selected
+                        if (lastSelectedCellColumn != -1 && lastSelectedCellRow != -1) {
+                            if (insertValue(&g.cells[lastSelectedCellColumn][lastSelectedCellRow], value) == 0) {
+                                renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
+                                SDL_RenderPresent(guiElements->renderer);
+                            }
+                        }
+                    }
                     break;
 
                 case SDL_MOUSEBUTTONDOWN:
@@ -61,7 +71,7 @@ int gameLoop(const GuiElements *guiElements, const Grid g) {
     return 0;
 }
 
-int runGui(const Grid g) {
+int runGui(Grid g) {
     GuiElements guiElements;
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0)

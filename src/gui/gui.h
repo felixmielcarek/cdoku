@@ -9,6 +9,6 @@
 #include "constants/constants.h"
 #include "rendering/rendering.h"
 
-int runGui(const Grid g);
+int runGui(Grid g);
 
 #endif

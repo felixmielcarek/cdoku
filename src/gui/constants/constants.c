@@ -7,6 +7,7 @@ const SDL_Color BLACK = {0, 0, 0, 0};
 const SDL_Color BLUE1 = {174, 214, 241, 255};
 const SDL_Color BLUE2 = {133, 193, 233, 255};
 const SDL_Color BLUE3 = {93, 173, 226, 255};
+const SDL_Color BLUE4 = {27, 79, 114, 255};
 
 const SDL_Color BGCOLOR = GRAY2;
 const SDL_Color SELECTEDCELLCOLOR = BLUE3;
@@ -28,4 +29,4 @@ const int GRIDY = 100;
 const char *FONTNAME = "gui/fonts/Poppins-Regular.ttf";
 const int FONTSIZE = 34;
 const SDL_Color FIXCELLTEXTCOLOR = BLACK;
-const SDL_Color CELLTEXTCOLOR = BLACK;
+const SDL_Color CELLTEXTCOLOR = BLUE4;

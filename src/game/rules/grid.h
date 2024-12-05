@@ -5,5 +5,6 @@
 
 typedef struct grid {
     Cell cells[9][9];
+    int solution[9][9];
 } Grid;
 #endif
