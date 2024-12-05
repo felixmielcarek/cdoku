@@ -23,13 +23,14 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
 
     while (running) {
         while (SDL_PollEvent(&event)) {
+            const char *pressedKeyName;
             switch (event.type) {
                 case SDL_QUIT:
                     running = 0;
                     break;
 
                 case SDL_KEYDOWN:
-                    const char *pressedKeyName = SDL_GetKeyName(event.key.keysym.sym);
+                    pressedKeyName = SDL_GetKeyName(event.key.keysym.sym);
                     fprintf(stderr, "Key pressed:\t%s\n", pressedKeyName);
                     value = atoi(pressedKeyName);
                     // if pressed key is a number

@@ -7,7 +7,7 @@ OBJS = $(SRCS:.c=.o)	# copy C files names after changing the file extensions
 all: $(NAME).out
 
 $(NAME).out: $(OBJS)	# requires every C files to be compiled
-	$(CC) -o $@ $(OBJS) $(SDLFLAGS)
+	$(CC) -o $@ $(OBJS) $(SDLFLAGS) $(CURLFLAGS)
 
 # handle a compilation of a C file
 %.o: %.c
