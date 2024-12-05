@@ -4,14 +4,36 @@
 
 #include "game.h"
 
-int getNewGrid(Grid* result) {
-    int rowIndex=0, columnIndex=0;
-    char* gridJson = "[[0,7,4,0,6,0,0,0,0], [0,0,0,0,8,0,0,0,0], [6,8,0,0,0,0,2,0,0], [1,0,5,0,0,7,0,9,0], [0,9,0,0,0,1,0,0,0], [0,0,0,0,0,0,5,0,0], [0,4,0,0,0,8,0,0,1], [0,0,0,0,0,0,0,7,0], [8,1,6,0,0,0,0,0,5]]";
+int isGameFinished(const Grid grid) {
+    for (int col = 0; col < 9; ++col) {
+        for (int row = 0; row < 9; ++row) {
+            if(grid.cells[col][row].value == 0) return 1;
+            //if(grid.cells[col][row].value != grid.solution[col][row]) return 2;
+        }
+    }
+    return 0;
+}
 
-    if(!gridJson)
+void insertNewCell(Grid* grid, const int column, const int row, const int value) {
+    Cell newCell;
+    newCell.isModifiable = value == 0;
+    for(int i=0 ; i<9 ; ++i) newCell.notes[i] = false;
+    newCell.value = value;
+
+    grid->cells[column][row] = newCell;
+}
+
+void insertNewCellSolution(Grid* grid, const int column, const int row, const int value) {
+    grid->solution[column][row] = value;
+}
+
+int parseJsonGrid(Grid* result, char* json, void (*insertJsonValue)(Grid*, const int, const int, const int)){
+    int rowIndex=0, columnIndex=0;
+
+    if(!json)
         return 1;
 
-    cJSON *gridArray = cJSON_Parse(gridJson);
+    cJSON *gridArray = cJSON_Parse(json);
     if (!gridArray)
         return 2;
 
@@ -47,12 +69,7 @@ int getNewGrid(Grid* result) {
                 return 2;
             }
 
-            Cell newCell;
-            newCell.isModifiable = value->valueint == 0;
-            for(int i=0 ; i<9 ; ++i) newCell.notes[i] = false;
-            newCell.value = value->valueint;
-
-            result->cells[rowIndex][columnIndex] = newCell;
+            (*insertJsonValue)(result, columnIndex, rowIndex, value->valueint);
 
             columnIndex = columnIndex+1;
         }
@@ -62,5 +79,16 @@ int getNewGrid(Grid* result) {
     }
 
     cJSON_Delete(gridArray);
+    return 0;
+}
+
+
+int getNewGrid(Grid* result) {
+    char* gridJson = "[[5,0,0,3,7,0,0,1,8],[0,0,0,6,1,0,0,5,9],[7,0,6,0,8,9,3,2,4],[0,0,0,0,5,8,1,0,0],[0,0,9,0,6,0,5,4,2],[0,4,0,0,0,0,8,0,6],[0,0,0,0,9,0,0,3,0],[4,0,0,1,0,6,0,0,5],[9,5,3,0,4,0,2,0,1]]";
+    char* solutionJson = "[[5,9,4,3,7,2,6,1,8],[2,3,8,6,1,4,7,5,9],[7,1,6,5,8,9,3,2,4],[6,2,7,4,5,8,1,9,3],[1,8,9,7,6,3,5,4,2],[3,4,5,9,2,1,8,7,6],[8,6,1,2,9,5,4,3,7],[4,7,2,1,3,6,9,8,5],[9,5,3,8,4,7,2,6,1]]";
+
+    parseJsonGrid(result, gridJson, insertNewCell);
+    parseJsonGrid(result, solutionJson, insertNewCellSolution);
+
     return 0;
 }

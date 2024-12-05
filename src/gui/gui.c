@@ -19,7 +19,7 @@ int getCoordonatesCell(const int x, const int y, int *column, int *row) {
 
 int gameLoop(const GuiElements *guiElements, Grid g) {
     SDL_Event event;
-    int running = 1, lastSelectedCellColumn = -1, lastSelectedCellRow = -1, value;
+    int running = 1, lastSelectedCellColumn = -1, lastSelectedCellRow = -1, value, gameResult;
 
     while (running) {
         while (SDL_PollEvent(&event)) {
@@ -35,7 +35,13 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
                         // if a cell is selected
                         if (lastSelectedCellColumn != -1 && lastSelectedCellRow != -1) {
                             if (insertValue(&g.cells[lastSelectedCellColumn][lastSelectedCellRow], value) == 0) {
-                                renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
+                                gameResult = isGameFinished(g);
+                                if (gameResult == 0)
+                                    renderWunGrid(guiElements, g);
+                                if (gameResult == 1)
+                                    renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
+                                if (gameResult == 2)
+                                    renderLostGrid(guiElements, g);
                                 SDL_RenderPresent(guiElements->renderer);
                             }
                         }

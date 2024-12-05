@@ -13,7 +13,7 @@
 #include "../constants/constants.h"
 
 int renderCell(const GuiElements *guiElements, const Cell cell, const int column, const int row,
-               const SDL_Color backgroundColor);
-int renderCellBorders(const GuiElements *guiElements, const int column, const int row);
+               const SDL_Color textColor, const SDL_Color backgroundColor);
+int renderCellBorders(const GuiElements *guiElements, const int column, const int row, const SDL_Color borderColor);
 
 #endif // CELLRENDERING_H
