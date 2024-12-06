@@ -20,6 +20,7 @@ int getCoordonatesCell(const int x, const int y, int *column, int *row) {
 int gameLoop(const GuiElements *guiElements, Grid g) {
     SDL_Event event;
     int running = 1, lastSelectedCellColumn = -1, lastSelectedCellRow = -1, value;
+    int insertMode = 0; // 0 = value ; 1 = note
 
     while (running) {
         while (SDL_PollEvent(&event)) {
@@ -36,16 +37,21 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
                     if (value != 0) {
                         // if a cell is selected
                         if (lastSelectedCellColumn != -1 && lastSelectedCellRow != -1) {
-                            if (insertValue(&g.cells[lastSelectedCellColumn][lastSelectedCellRow], value) == 0) {
-                                int gameResult = isGameFinished(g);
-                                if (gameResult == 0)
-                                    renderWunGrid(guiElements, g);
-                                if (gameResult == 1)
-                                    renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
-                                if (gameResult == 2)
-                                    renderLostGrid(guiElements, g);
-                                SDL_RenderPresent(guiElements->renderer);
-                            }
+                            if (insertMode == 0) {
+                                if (insertValue(&g.cells[lastSelectedCellColumn][lastSelectedCellRow], value) == 0) {
+                                    int gameResult = isGameFinished(g);
+                                    if (gameResult == 0)
+                                        renderWunGrid(guiElements, g);
+                                    if (gameResult == 1)
+                                        renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
+                                    if (gameResult == 2)
+                                        renderLostGrid(guiElements, g);
+                                }
+                            } else if (insertNote(&g.cells[lastSelectedCellColumn][lastSelectedCellRow], value) == 0)
+                                renderCell(guiElements, g.cells[lastSelectedCellColumn][lastSelectedCellRow],
+                                           lastSelectedCellColumn, lastSelectedCellRow, CELLTEXTCOLOR,
+                                           SELECTEDCELLCOLOR);
+                            SDL_RenderPresent(guiElements->renderer);
                         }
                         break;
                     }
@@ -56,7 +62,10 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
                         }
                         break;
                     }
-
+                    if (strcmp(pressedKeyName, "N") == 0) {
+                        insertMode = !insertMode;
+                        break;
+                    }
                     break;
 
                 case SDL_MOUSEBUTTONDOWN:
@@ -65,6 +74,7 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
                         break;
 
                     // Check if in bounds
+                    int previousCellColumn = lastSelectedCellColumn, previousCellRow = lastSelectedCellRow;
                     if (getCoordonatesCell(event.button.x, event.button.y, &lastSelectedCellColumn,
                                            &lastSelectedCellRow) == 1) {
                         // Check if should unselect cell
@@ -74,6 +84,10 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
                         }
                         break;
                     }
+
+                    // Check if different cell
+                    if (previousCellColumn == lastSelectedCellColumn && previousCellRow == lastSelectedCellRow)
+                        break;
 
                     // Select
                     renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);

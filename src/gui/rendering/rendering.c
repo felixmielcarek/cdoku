@@ -26,7 +26,6 @@ int renderSelection(const GuiElements *guiElements, const Grid grid, const int c
     return 0;
 }
 
-
 int renderWunGrid(const GuiElements *guiElements, const Grid grid) {
     for (int col = 0; col < 9; ++col) {
         for (int row = 0; row < 9; ++row) {
@@ -76,7 +75,6 @@ int renderGrid(const GuiElements *guiElements, const Grid grid) {
 
     return 0;
 }
-
 
 int renderMainMenu(const GuiElements *guiElements) {
     char *text = "Nouvelle partie";

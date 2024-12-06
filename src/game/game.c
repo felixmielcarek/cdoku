@@ -158,7 +158,6 @@ int apiRequest(char **result) {
 int getNewGrid(Grid *result) {
     char *apiData = NULL;
 
-
     apiRequest(&apiData);
     parseJsonData(result, apiData);
     free(apiData);
