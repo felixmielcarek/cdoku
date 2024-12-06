@@ -5,14 +5,18 @@
 #include "game.h"
 
 int isGameFinished(const Grid grid) {
+    int isGridCorrect = 1;
+
     for (int col = 0; col < 9; ++col) {
         for (int row = 0; row < 9; ++row) {
             if (grid.cells[col][row].value == 0)
                 return 1;
             if (grid.cells[col][row].value != grid.solution[col][row])
-                return 2;
+                isGridCorrect = 0;
         }
     }
+    if (isGridCorrect != 1)
+        return 2;
     return 0;
 }
 

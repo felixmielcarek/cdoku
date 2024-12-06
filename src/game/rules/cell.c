@@ -1,6 +1,6 @@
 #include "cell.h"
 
-int insertValue(Cell *cell, int value) {
+int insertCellValue(Cell *cell, int value) {
     if (!cell->isModifiable)
         return 1;
     cell->value = value;

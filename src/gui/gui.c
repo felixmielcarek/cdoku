@@ -38,7 +38,7 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
                         // if a cell is selected
                         if (lastSelectedCellColumn != -1 && lastSelectedCellRow != -1) {
                             if (insertMode == 0) {
-                                if (insertValue(&g.cells[lastSelectedCellColumn][lastSelectedCellRow], value) == 0) {
+                                if (insertValue(&g, lastSelectedCellColumn, lastSelectedCellRow, value) == 0) {
                                     int gameResult = isGameFinished(g);
                                     if (gameResult == 0)
                                         renderWunGrid(guiElements, g);
