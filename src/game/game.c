@@ -33,12 +33,6 @@ void insertNewCellSolution(Grid *grid, const int column, const int row, const in
 int parseJsonGrid(Grid *result, cJSON *json, void (*insertJsonValue)(Grid *, const int, const int, const int)) {
     int rowIndex = 0, columnIndex = 0;
 
-    if (json == NULL)
-        puts("flag1");
-    else
-        puts("flag2");
-
-
     if (cJSON_GetArraySize(json) != 9) {
         cJSON_Delete(json);
         return 2;

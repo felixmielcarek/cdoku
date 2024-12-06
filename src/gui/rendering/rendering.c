@@ -60,6 +60,8 @@ int renderLostGrid(const GuiElements *guiElements, const Grid grid) {
 }
 
 int renderGrid(const GuiElements *guiElements, const Grid grid) {
+    renderBase(guiElements);
+
     for (int col = 0; col < 9; ++col) {
         for (int row = 0; row < 9; ++row) {
             SDL_Color textColor = grid.cells[col][row].isModifiable ? CELLTEXTCOLOR : FIXCELLTEXTCOLOR;
@@ -71,6 +73,34 @@ int renderGrid(const GuiElements *guiElements, const Grid grid) {
     for (int sectionColumn = 0; sectionColumn < 3; ++sectionColumn)
         for (int sectionRow = 0; sectionRow < 3; ++sectionRow)
             renderSectionBorders(guiElements, sectionColumn, sectionRow, SECTIONBORDERCOLOR);
+
+    return 0;
+}
+
+
+int renderMainMenu(const GuiElements *guiElements) {
+    char *text = "Nouvelle partie";
+    int textWidth, textHeight;
+
+    renderBase(guiElements);
+
+    setRanderDrawColor(guiElements->renderer, MAINMENUBGCOLOR);
+    SDL_Rect rect = {MAINMENUX, MAINMENUY, MAINMENUWIDTH, MAINMENUHEIGHT};
+    SDL_RenderFillRect(guiElements->renderer, &rect);
+
+    TTF_Font *font = TTF_OpenFont(FONTNAME, FONTSIZE);
+    TTF_SizeText(font, text, &textWidth, &textHeight);
+
+    SDL_Surface *textSurface = TTF_RenderText_Blended(font, text, MAINMENUTEXTCOLOR);
+    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(guiElements->renderer, textSurface);
+    SDL_FreeSurface(textSurface);
+
+    SDL_Rect textRect = {MAINMENUX + MAINMENUWIDTH / 2 - textWidth / 2, MAINMENUY + MAINMENUHEIGHT / 2 - textHeight / 2,
+                         textWidth, textHeight};
+    SDL_RenderCopy(guiElements->renderer, textTexture, NULL, &textRect);
+
+    SDL_DestroyTexture(textTexture);
+    TTF_CloseFont(font);
 
     return 0;
 }

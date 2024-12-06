@@ -26,8 +26,7 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
             const char *pressedKeyName;
             switch (event.type) {
                 case SDL_QUIT:
-                    running = 0;
-                    break;
+                    return 1;
 
                 case SDL_KEYDOWN:
                     pressedKeyName = SDL_GetKeyName(event.key.keysym.sym);
@@ -89,7 +88,67 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
     return 0;
 }
 
-int runGui(Grid g) {
+int startGame(const GuiElements *guiElements) {
+    Grid grid;
+
+    getNewGrid(&grid);
+    for (int i = 0; i < 9; ++i) {
+        for (int y = 0; y < 9; ++y)
+            fprintf(stderr, "%d ", grid.cells[i][y].value);
+        fprintf(stderr, "\n");
+    }
+
+    renderGrid(guiElements, grid);
+    SDL_RenderPresent(guiElements->renderer);
+
+    return gameLoop(guiElements, grid);
+}
+
+int mainMenuLoop(const GuiElements *guiElements) {
+    SDL_Event event;
+    int running = 1;
+
+    while (running) {
+        while (SDL_PollEvent(&event)) {
+            const char *pressedKeyName;
+            switch (event.type) {
+                case SDL_QUIT:
+                    running = 0;
+                    break;
+
+                case SDL_KEYDOWN:
+                    pressedKeyName = SDL_GetKeyName(event.key.keysym.sym);
+                    fprintf(stderr, "Key pressed:\t%s\n", pressedKeyName);
+                    if (strcmp(pressedKeyName, "Return") == 0) {
+                        if (startGame(guiElements) == 1)
+                            running = 0;
+                        break;
+                    }
+
+                    break;
+
+                case SDL_MOUSEBUTTONDOWN:
+                    // Only handle left click
+                    if (event.button.button != 1)
+                        break;
+                    // Check if in bounds
+                    if (event.button.x >= MAINMENUX && event.button.x <= MAINMENUX + MAINMENUWIDTH &&
+                        event.button.y >= MAINMENUY && event.button.y <= MAINMENUY + MAINMENUHEIGHT) {
+                        if (startGame(guiElements) == 1)
+                            running = 0;
+                        break;
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+    return 0;
+}
+
+int runGui() {
     GuiElements guiElements;
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -98,8 +157,8 @@ int runGui(Grid g) {
     if (TTF_Init() == -1)
         return exitOnTTFError(EXIT_FAILURE, &guiElements, "SDL TTF init");
 
-    guiElements.window =
-            SDL_CreateWindow("Cdoku", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_SHOWN);
+    guiElements.window = SDL_CreateWindow("Cdoku", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOWWIDTH,
+                                          WINDOWHEIGHT, SDL_WINDOW_SHOWN);
     if (guiElements.window == NULL)
         return exitOnSDLError(EXIT_FAILURE, &guiElements, "window creation");
 
@@ -107,11 +166,10 @@ int runGui(Grid g) {
     if (guiElements.renderer == NULL)
         return exitOnSDLError(EXIT_FAILURE, &guiElements, "renderer creation");
 
-    renderBase(&guiElements);
-    renderGrid(&guiElements, g);
+    renderMainMenu(&guiElements);
     SDL_RenderPresent(guiElements.renderer);
 
-    gameLoop(&guiElements, g);
+    mainMenuLoop(&guiElements);
 
     return cleanExit(EXIT_SUCCESS, &guiElements);
 }

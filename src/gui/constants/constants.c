@@ -11,6 +11,9 @@ const SDL_Color BLUE4 = {27, 79, 114, 255};
 const SDL_Color GREEN = {35, 155, 86, 255};
 const SDL_Color RED = {203, 67, 53, 255};
 
+const int WINDOWWIDTH = 700;
+const int WINDOWHEIGHT = 500;
+
 const SDL_Color BGCOLOR = GRAY2;
 const SDL_Color SELECTEDCELLCOLOR = BLUE3;
 const SDL_Color NUMBERSELECTEDCELLCOLOR = BLUE2;
@@ -30,8 +33,17 @@ const int SECTIONBORDERSIZE = 2;
 const SDL_Color SECTIONBORDERCOLOR = BLACK;
 const SDL_Color ENDSECTIONBORDERCOLOR = WHITE;
 
-const int GRIDX = 100;
-const int GRIDY = 100;
+const int GRIDSIZE = SECTIONSIZE * 3 + SECTIONBORDERSIZE * 2;
+
+const int GRIDX = WINDOWWIDTH / 2 - GRIDSIZE / 2;
+const int GRIDY = WINDOWHEIGHT / 2 - GRIDSIZE / 2;
+
+const int MAINMENUWIDTH = 350;
+const int MAINMENUHEIGHT = 60;
+const int MAINMENUX = WINDOWWIDTH / 2 - MAINMENUWIDTH / 2;
+const int MAINMENUY = WINDOWHEIGHT / 2 - MAINMENUHEIGHT / 2;
+const SDL_Color MAINMENUBGCOLOR = WHITE;
+const SDL_Color MAINMENUTEXTCOLOR = BLUE4;
 
 const char *FONTNAME = "gui/fonts/Poppins-Regular.ttf";
 const int FONTSIZE = 34;
