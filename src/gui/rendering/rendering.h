@@ -16,6 +16,7 @@
 
 int renderSelection(const GuiElements *guiElements, const Grid grid, const int cellColumn, const int cellRow);
 int renderBase(const GuiElements *gui_elements);
+int renderMainMenu(const GuiElements *gui_elements);
 int renderGrid(const GuiElements *guiElements, const Grid grid);
 int renderWunGrid(const GuiElements *guiElements, const Grid grid);
 int renderLostGrid(const GuiElements *guiElements, const Grid grid);

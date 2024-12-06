@@ -10,6 +10,6 @@
 #include "constants/constants.h"
 #include "rendering/rendering.h"
 
-int runGui(Grid g);
+int runGui();
 
 #endif
