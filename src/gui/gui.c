@@ -55,6 +55,46 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
                         }
                         break;
                     }
+                    if (strcmp(pressedKeyName, "Left") == 0) {
+                        // Check if in bounds
+                        if (lastSelectedCellColumn == 0 || lastSelectedCellColumn == -1 || lastSelectedCellRow == -1)
+                            break;
+
+                        lastSelectedCellColumn = lastSelectedCellColumn - 1;
+                        renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
+                        SDL_RenderPresent(guiElements->renderer);
+                        break;
+                    }
+                    if (strcmp(pressedKeyName, "Right") == 0) {
+                        // Check if in bounds
+                        if (lastSelectedCellColumn == 8 || lastSelectedCellColumn == -1 || lastSelectedCellRow == -1)
+                            break;
+
+                        lastSelectedCellColumn = lastSelectedCellColumn + 1;
+                        renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
+                        SDL_RenderPresent(guiElements->renderer);
+                        break;
+                    }
+                    if (strcmp(pressedKeyName, "Up") == 0) {
+                        // Check if in bounds
+                        if (lastSelectedCellRow == 0 || lastSelectedCellColumn == -1 || lastSelectedCellRow == -1)
+                            break;
+
+                        lastSelectedCellRow = lastSelectedCellRow - 1;
+                        renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
+                        SDL_RenderPresent(guiElements->renderer);
+                        break;
+                    }
+                    if (strcmp(pressedKeyName, "Down") == 0) {
+                        // Check if in bounds
+                        if (lastSelectedCellRow == 8 || lastSelectedCellColumn == -1 || lastSelectedCellRow == -1)
+                            break;
+
+                        lastSelectedCellRow = lastSelectedCellRow + 1;
+                        renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
+                        SDL_RenderPresent(guiElements->renderer);
+                        break;
+                    }
                     if (strcmp(pressedKeyName, "Backspace") == 0 || strcmp(pressedKeyName, "Delete") == 0) {
                         if (removeValue(&g.cells[lastSelectedCellColumn][lastSelectedCellRow]) == 0) {
                             renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
