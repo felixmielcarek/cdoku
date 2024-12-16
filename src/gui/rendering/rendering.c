@@ -58,8 +58,33 @@ int renderLostGrid(const GuiElements *guiElements, const Grid grid) {
     return 0;
 }
 
+int renderNoteIcon(const GuiElements *guiElements, const int isToggled) {
+    const char *iconPath = isToggled == 1 ? NOTEICONPATHTOGGLED : NOTEICONPATHNOTTOGGLED;
+
+    SDL_Surface *loadedSurface = IMG_Load(iconPath);
+
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(guiElements->renderer, loadedSurface);
+    SDL_FreeSurface(loadedSurface);
+
+    SDL_Rect rect = {NOTEICONX, NOTEICONY, NOTEICONSIZE, NOTEICONSIZE};
+    setRanderDrawColor(guiElements->renderer, NOTEICONBG);
+    SDL_RenderFillRect(guiElements->renderer, &rect);
+
+    setRanderDrawColor(guiElements->renderer, NOTEICONBORDERCOLOR);
+    for (int i = 0; i < NOTEICONBORDERSIZE; ++i) {
+        SDL_Rect border = {NOTEICONX - (i + 1), NOTEICONY - (i + 1), NOTEICONSIZE + (i + 1) * 2,
+                           NOTEICONSIZE + (i + 1) * 2};
+        SDL_RenderDrawRect(guiElements->renderer, &border);
+    }
+
+    SDL_RenderCopy(guiElements->renderer, texture, NULL, &rect);
+    SDL_DestroyTexture(texture);
+
+    SDL_RenderPresent(guiElements->renderer);
+    return 0;
+}
+
 int renderGrid(const GuiElements *guiElements, const Grid grid) {
-    renderBase(guiElements);
 
     for (int col = 0; col < 9; ++col) {
         for (int row = 0; row < 9; ++row) {

@@ -52,3 +52,12 @@ const SDL_Color FIXCELLTEXTCOLOR = BLACK;
 const SDL_Color CELLTEXTCOLOR = BLUE4;
 const SDL_Color ENDCELLTEXTCOLOR = WHITE;
 const SDL_Color NOTETEXTCOLOR = GRAY2;
+
+const char *NOTEICONPATHTOGGLED = "gui/images/note_icon_filled.png";
+const char *NOTEICONPATHNOTTOGGLED = "gui/images/note_icon_empty.png";
+const int NOTEICONSIZE = 60;
+const int NOTEICONX = GRIDX + GRIDSIZE + 20;
+const int NOTEICONY = GRIDY + 20;
+const SDL_Color NOTEICONBG = WHITE;
+const SDL_Color NOTEICONBORDERCOLOR = WHITE;
+const int NOTEICONBORDERSIZE = 4;

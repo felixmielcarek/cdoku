@@ -64,6 +64,8 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
                     }
                     if (strcmp(pressedKeyName, "N") == 0) {
                         insertMode = !insertMode;
+                        renderNoteIcon(guiElements, insertMode);
+                        SDL_RenderPresent(guiElements->renderer);
                         break;
                     }
                     break;
@@ -72,6 +74,15 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
                     // Only handle left click
                     if (event.button.button != 1)
                         break;
+
+                    // Check if note icon has been clicked
+                    if (event.button.x >= NOTEICONX && event.button.x <= NOTEICONX + NOTEICONSIZE &&
+                        event.button.y >= NOTEICONY && event.button.y <= NOTEICONY + NOTEICONSIZE) {
+                        insertMode = !insertMode;
+                        renderNoteIcon(guiElements, insertMode);
+                        SDL_RenderPresent(guiElements->renderer);
+                        break;
+                    }
 
                     // Check if in bounds
                     int previousCellColumn = lastSelectedCellColumn, previousCellRow = lastSelectedCellRow;
@@ -112,7 +123,10 @@ int startGame(const GuiElements *guiElements) {
         fprintf(stderr, "\n");
     }
 
+    renderBase(guiElements);
     renderGrid(guiElements, grid);
+    renderNoteIcon(guiElements, 0);
+
     SDL_RenderPresent(guiElements->renderer);
 
     return gameLoop(guiElements, grid);
@@ -170,6 +184,9 @@ int runGui() {
 
     if (TTF_Init() == -1)
         return exitOnTTFError(EXIT_FAILURE, &guiElements, "SDL TTF init");
+
+    if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG)
+        return exitOnIMGError(EXIT_FAILURE, &guiElements, "SDL IMG init");
 
     guiElements.window = SDL_CreateWindow("Cdoku", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOWWIDTH,
                                           WINDOWHEIGHT, SDL_WINDOW_SHOWN);

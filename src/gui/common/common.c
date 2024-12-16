@@ -10,6 +10,7 @@ int cleanExit(const int result, const GuiElements *guiElements) {
     if (guiElements->renderer != NULL)
         SDL_DestroyRenderer(guiElements->renderer);
 
+    IMG_Quit();
     TTF_Quit();
     SDL_Quit();
     return result;
@@ -17,6 +18,11 @@ int cleanExit(const int result, const GuiElements *guiElements) {
 
 int exitOnError(const int result, const GuiElements *guiElements, const char *context) {
     fprintf(stderr, "Error: %s.\n", context);
+    return cleanExit(result, guiElements);
+}
+
+int exitOnIMGError(const int result, const GuiElements *guiElements, const char *context) {
+    fprintf(stderr, "Error IMG [%s]: %s", context, IMG_GetError());
     return cleanExit(result, guiElements);
 }
 
