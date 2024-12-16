@@ -39,7 +39,18 @@ extern const SDL_Color MAINMENUTEXTCOLOR;
 
 extern const char *FONTNAME;
 extern const int FONTSIZE;
+extern const int NOTEFONTSIZE;
 extern const SDL_Color FIXCELLTEXTCOLOR;
 extern const SDL_Color CELLTEXTCOLOR;
 extern const SDL_Color ENDCELLTEXTCOLOR;
+extern const SDL_Color NOTETEXTCOLOR;
+
+extern const char *NOTEICONPATHTOGGLED;
+extern const char *NOTEICONPATHNOTTOGGLED;
+extern const int NOTEICONX;
+extern const int NOTEICONY;
+extern const int NOTEICONSIZE;
+extern const SDL_Color NOTEICONBG;
+extern const SDL_Color NOTEICONBORDERCOLOR;
+extern const int NOTEICONBORDERSIZE;
 #endif

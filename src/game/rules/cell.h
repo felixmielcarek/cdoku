@@ -18,7 +18,7 @@ typedef struct cell {
  * Return 1 if the cell is not modifiable.
  * Return 0 if ok.
  */
-int insertValue(Cell *cell, int value);
+int insertCellValue(Cell *cell, int value);
 
 /**
  * Set the value to 0 in the cell 'cell'.
