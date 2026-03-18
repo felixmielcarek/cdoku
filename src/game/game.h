@@ -5,17 +5,11 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include <curl/curl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "cJSON/cJSON.h"
+#include "api/sudoku_api.h"
+#include "parser/json_parser.h"
 #include "rules/grid.h"
-
-typedef struct apiResponse {
-    char *data;
-    size_t size; // needed to dynamically allocate memory
-} ApiResponse;
 
 /**
  * Check if the grid is fully filled.

@@ -8,6 +8,7 @@
 #include "../game/game.h"
 #include "common/common.h"
 #include "constants/constants.h"
+#include "input/input_handler.h"
 #include "rendering/rendering.h"
 
 int runGui();

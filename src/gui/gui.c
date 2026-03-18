@@ -1,134 +1,90 @@
 #include "gui.h"
 
-int getCoordonatesCell(const int x, const int y, int *column, int *row) {
-    const int noBorderX = x - GRIDX - SECTIONBORDERSIZE, // removes the outside left border of the grid
-            noBorderY = y - GRIDY - SECTIONBORDERSIZE; // removes the outside top border of the grid
-
-    if (noBorderX < 0 || noBorderY < 0 || noBorderX > 3 * SECTIONSIZE + 2 * SECTIONBORDERSIZE ||
-        noBorderY > 3 * SECTIONSIZE + 2 * SECTIONBORDERSIZE) {
-        *column = -1;
-        *row = -1;
-        return 1;
-    }
-
-    *column = noBorderX / (CELLSIZE + CELLBORDERSIZE);
-    *row = noBorderY / (CELLSIZE + CELLBORDERSIZE);
-
-    return 0;
-}
-
 int gameLoop(const GuiElements *guiElements, Grid g) {
     SDL_Event event;
-    int running = 1, lastSelectedCellColumn = -1, lastSelectedCellRow = -1, value;
+    int running = 1, lastSelectedCellColumn = -1, lastSelectedCellRow = -1;
     int insertMode = 0; // 0 = value ; 1 = note
 
     while (running) {
         while (SDL_PollEvent(&event)) {
-            const char *pressedKeyName;
-            switch (event.type) {
-                case SDL_QUIT:
+            InputEvent input = processEvent(&event);
+
+            switch (input.action) {
+                case INPUT_QUIT:
                     return 1;
 
-                case SDL_KEYDOWN:
-                    pressedKeyName = SDL_GetKeyName(event.key.keysym.sym);
-                    fprintf(stderr, "Key pressed:\t%s\n", pressedKeyName);
-                    value = atoi(pressedKeyName);
-                    // if pressed key is a number
-                    if (value != 0) {
-                        // if a cell is selected
-                        if (lastSelectedCellColumn != -1 && lastSelectedCellRow != -1) {
-                            if (insertMode == 0) {
-                                if (insertValue(&g, lastSelectedCellColumn, lastSelectedCellRow, value) == 0) {
-                                    int gameResult = isGameFinished(g);
-                                    if (gameResult == 0)
-                                        renderWunGrid(guiElements, g);
-                                    if (gameResult == 1)
-                                        renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
-                                    if (gameResult == 2)
-                                        renderLostGrid(guiElements, g);
-                                }
-                            } else if (insertNote(&g.cells[lastSelectedCellColumn][lastSelectedCellRow], value) == 0)
-                                renderCell(guiElements, g.cells[lastSelectedCellColumn][lastSelectedCellRow],
-                                           lastSelectedCellColumn, lastSelectedCellRow, CELLTEXTCOLOR,
-                                           SELECTEDCELLCOLOR);
-                            SDL_RenderPresent(guiElements->renderer);
-                        }
-                        break;
+                case INPUT_NUMBER:
+                    // if a cell is selected
+                    if (lastSelectedCellColumn != -1 && lastSelectedCellRow != -1) {
+                        if (insertMode == 0) {
+                            if (insertValue(&g, lastSelectedCellColumn, lastSelectedCellRow, input.value) == 0) {
+                                int gameResult = isGameFinished(g);
+                                if (gameResult == 0)
+                                    renderWunGrid(guiElements, g);
+                                else if (gameResult == 1)
+                                    renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
+                                else if (gameResult == 2)
+                                    renderLostGrid(guiElements, g);
+                            }
+                        } else if (insertNote(&g.cells[lastSelectedCellColumn][lastSelectedCellRow], input.value) == 0)
+                            renderCell(guiElements, g.cells[lastSelectedCellColumn][lastSelectedCellRow],
+                                       lastSelectedCellColumn, lastSelectedCellRow, CELLTEXTCOLOR,
+                                       SELECTEDCELLCOLOR);
+                        SDL_RenderPresent(guiElements->renderer);
                     }
-                    if (strcmp(pressedKeyName, "Left") == 0) {
-                        // Check if in bounds
-                        if (lastSelectedCellColumn == 0 || lastSelectedCellColumn == -1 || lastSelectedCellRow == -1)
-                            break;
+                    break;
 
-                        lastSelectedCellColumn = lastSelectedCellColumn - 1;
+                case INPUT_ARROW_LEFT:
+                    if (lastSelectedCellColumn > 0 && lastSelectedCellRow != -1) {
+                        lastSelectedCellColumn--;
                         renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
                         SDL_RenderPresent(guiElements->renderer);
-                        break;
                     }
-                    if (strcmp(pressedKeyName, "Right") == 0) {
-                        // Check if in bounds
-                        if (lastSelectedCellColumn == 8 || lastSelectedCellColumn == -1 || lastSelectedCellRow == -1)
-                            break;
+                    break;
 
-                        lastSelectedCellColumn = lastSelectedCellColumn + 1;
+                case INPUT_ARROW_RIGHT:
+                    if (lastSelectedCellColumn < 8 && lastSelectedCellColumn != -1 && lastSelectedCellRow != -1) {
+                        lastSelectedCellColumn++;
                         renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
                         SDL_RenderPresent(guiElements->renderer);
-                        break;
                     }
-                    if (strcmp(pressedKeyName, "Up") == 0) {
-                        // Check if in bounds
-                        if (lastSelectedCellRow == 0 || lastSelectedCellColumn == -1 || lastSelectedCellRow == -1)
-                            break;
+                    break;
 
-                        lastSelectedCellRow = lastSelectedCellRow - 1;
+                case INPUT_ARROW_UP:
+                    if (lastSelectedCellRow > 0 && lastSelectedCellColumn != -1) {
+                        lastSelectedCellRow--;
                         renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
                         SDL_RenderPresent(guiElements->renderer);
-                        break;
                     }
-                    if (strcmp(pressedKeyName, "Down") == 0) {
-                        // Check if in bounds
-                        if (lastSelectedCellRow == 8 || lastSelectedCellColumn == -1 || lastSelectedCellRow == -1)
-                            break;
+                    break;
 
-                        lastSelectedCellRow = lastSelectedCellRow + 1;
+                case INPUT_ARROW_DOWN:
+                    if (lastSelectedCellRow < 8 && lastSelectedCellColumn != -1 && lastSelectedCellRow != -1) {
+                        lastSelectedCellRow++;
                         renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
                         SDL_RenderPresent(guiElements->renderer);
-                        break;
                     }
-                    if (strcmp(pressedKeyName, "Backspace") == 0 || strcmp(pressedKeyName, "Delete") == 0) {
+                    break;
+
+                case INPUT_DELETE:
+                    if (lastSelectedCellColumn != -1 && lastSelectedCellRow != -1) {
                         if (removeValue(&g.cells[lastSelectedCellColumn][lastSelectedCellRow]) == 0) {
                             renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
                             SDL_RenderPresent(guiElements->renderer);
                         }
-                        break;
-                    }
-                    if (strcmp(pressedKeyName, "N") == 0) {
-                        insertMode = !insertMode;
-                        renderNoteIcon(guiElements, insertMode);
-                        SDL_RenderPresent(guiElements->renderer);
-                        break;
                     }
                     break;
 
-                case SDL_MOUSEBUTTONDOWN:
-                    // Only handle left click
-                    if (event.button.button != 1)
-                        break;
+                case INPUT_TOGGLE_NOTE:
+                case INPUT_NOTE_ICON_CLICK:
+                    insertMode = !insertMode;
+                    renderNoteIcon(guiElements, insertMode);
+                    SDL_RenderPresent(guiElements->renderer);
+                    break;
 
-                    // Check if note icon has been clicked
-                    if (event.button.x >= NOTEICONX && event.button.x <= NOTEICONX + NOTEICONSIZE &&
-                        event.button.y >= NOTEICONY && event.button.y <= NOTEICONY + NOTEICONSIZE) {
-                        insertMode = !insertMode;
-                        renderNoteIcon(guiElements, insertMode);
-                        SDL_RenderPresent(guiElements->renderer);
-                        break;
-                    }
-
-                    // Check if in bounds
+                case INPUT_CELL_CLICK: {
                     int previousCellColumn = lastSelectedCellColumn, previousCellRow = lastSelectedCellRow;
-                    if (getCoordonatesCell(event.button.x, event.button.y, &lastSelectedCellColumn,
-                                           &lastSelectedCellRow) == 1) {
-                        // Check if should unselect cell
+                    if (getCoordonatesCell(input.x, input.y, &lastSelectedCellColumn, &lastSelectedCellRow) == 1) {
                         if (lastSelectedCellColumn == -1 || lastSelectedCellRow == -1) {
                             renderGrid(guiElements, g);
                             SDL_RenderPresent(guiElements->renderer);
@@ -136,14 +92,12 @@ int gameLoop(const GuiElements *guiElements, Grid g) {
                         break;
                     }
 
-                    // Check if different cell
-                    if (previousCellColumn == lastSelectedCellColumn && previousCellRow == lastSelectedCellRow)
-                        break;
-
-                    // Select
-                    renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
-                    SDL_RenderPresent(guiElements->renderer);
+                    if (previousCellColumn != lastSelectedCellColumn || previousCellRow != lastSelectedCellRow) {
+                        renderSelection(guiElements, g, lastSelectedCellColumn, lastSelectedCellRow);
+                        SDL_RenderPresent(guiElements->renderer);
+                    }
                     break;
+                }
 
                 default:
                     break;
@@ -178,34 +132,17 @@ int mainMenuLoop(const GuiElements *guiElements) {
 
     while (running) {
         while (SDL_PollEvent(&event)) {
-            const char *pressedKeyName;
-            switch (event.type) {
-                case SDL_QUIT:
+            InputEvent input = processEvent(&event);
+
+            switch (input.action) {
+                case INPUT_QUIT:
                     running = 0;
                     break;
 
-                case SDL_KEYDOWN:
-                    pressedKeyName = SDL_GetKeyName(event.key.keysym.sym);
-                    fprintf(stderr, "Key pressed:\t%s\n", pressedKeyName);
-                    if (strcmp(pressedKeyName, "Return") == 0) {
-                        if (startGame(guiElements) == 1)
-                            running = 0;
-                        break;
-                    }
-
-                    break;
-
-                case SDL_MOUSEBUTTONDOWN:
-                    // Only handle left click
-                    if (event.button.button != 1)
-                        break;
-                    // Check if in bounds
-                    if (event.button.x >= MAINMENUX && event.button.x <= MAINMENUX + MAINMENUWIDTH &&
-                        event.button.y >= MAINMENUY && event.button.y <= MAINMENUY + MAINMENUHEIGHT) {
-                        if (startGame(guiElements) == 1)
-                            running = 0;
-                        break;
-                    }
+                case INPUT_CONFIRM:
+                case INPUT_MENU_CLICK:
+                    if (startGame(guiElements) == 1)
+                        running = 0;
                     break;
 
                 default:
